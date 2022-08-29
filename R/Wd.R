@@ -52,9 +52,9 @@ Tw2 = function(dm, f){
 }
 
 
-#' This is the title.
+#' WdS - WdS star statistic
 #'
-#' This is the description.
+#' The WdStar statistic is based on a matrix and a factor
 #'
 #' These are further details.
 #'
@@ -94,28 +94,7 @@ WdS = function(dm, f){
                    (sum(SS2[idx, idx])/sum(ns[idx]) - sum(diag(SS2[idx, idx])/ns[idx]))))
   k=nlevels(f)
   h = sum( (1-ns/s2/W)^2/(ns-1))
-  result = Ws/W/(k-1)/(1+(2*(k-2)/(k^2-1))*h)
-  #print(result)
-  result
-
-  #browser()
-
-  # names(df) <- "df"
-  # tstat <-  sqrt(M-1) * bcR / sqrt(1-bcR^2)
-  # names(tstat) <- "T"
-  # estimate <- bcR
-  # names(estimate) <- "WdStar"
-  # tstat <- result$statistic
-  # pval <- result$p.value # 1 - pt(tstat, df=df)
-  # method <- "WdS"
-  # rval <- list(statistic = tstat,
-  #              parameter = df,
-  #              p.value = pval,
-  #              estimate=estimate,
-  #              method=method,
-  #              data.name=dname)
-  # class(rval) <- "htest"
-  # return(rval)
+  Ws/W/(k-1)/(1+(2*(k-2)/(k^2-1))*h)
 }
 
 generic.distance.permutation.test =
