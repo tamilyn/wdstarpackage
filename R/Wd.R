@@ -1,20 +1,51 @@
 is.dist = function(x) any(class(x)=='dist')
 
+#' dist.sigma2 - sigma2 distance measure
+#'
+#' The dist.sigma2 statistic is based on a matrix and a factor
+#'
+#' @param dm A distance matrix
+#'
+#' @export
 dist.sigma2 = function(dm){
   dd = as.matrix(dm)
   dd[upper.tri(dd)]=0 ##
   sum(dd^2)/nrow(dd)/(nrow(dd)-1)
 }
 
+#' dist.ss2 - ss2 distance measure
+#'
+#' The dist.ss2 statistic is based on a matrix and a factor
+#'
+#' @param dm A distance matrix of square distances
+#' @param f factor
+#'
+#' @export
 dist.ss2 = function(dm2, f){ #dm2 is matrix of square distances; f factor
   K = sapply(levels(f), function(lev) f==lev)
   t(K)%*%dm2%*%K/2
 }
 
+#' dist.group.sigma2 - group sigma2 distance measure
+#'
+#' The dist.group.sigma2 statistic is based on a matrix and a factor
+#'
+#' @param dm A distance matrix
+#' @param f factor
+#'
+#' @export
 dist.group.sigma2 = function(dm, f){
   diag(dist.ss2(as.matrix(dm)^2, f))/table(f)/(table(f)-1)
 }
 
+#' dist.cohen.d - cohen.d statistic
+#'
+#' The dist.cohen.d statistic is based on a matrix and a factor
+#'
+#' @param dm A distance matrix
+#' @param f factor
+#'
+#' @export
 dist.cohen.d = function(dm, f){
   if(nlevels(f) != 2) return(NULL)
   SS2 = dist.ss2(as.matrix(dm^2),f)
@@ -33,6 +64,15 @@ dist.cohen.d = function(dm, f){
   mean.diff/sqrt(((ns[1]-1)*s1 + (ns[2]-1)*s2)/(sum(ns)-2))
 }
 
+
+#' Tw2 - Tw2 statistic
+#'
+#' The Tw2 statistic is based on a matrix and a factor
+#'
+#' @param dm A distance matrix
+#' @param f factor
+#'
+#' @export
 Tw2 = function(dm, f){
   if(nlevels(f) != 2) return(NULL)
   SS2 = dist.ss2(as.matrix(dm^2),f)
@@ -52,34 +92,14 @@ Tw2 = function(dm, f){
 }
 
 
-#' WdS - WdS star statistic
+#' WdS - WdS  statistic
 #'
-#' The WdStar statistic is based on a matrix and a factor
+#' The WdS statistic is based on a matrix and a factor
 #'
-#' These are further details.
-#'
-#' @section A Custom Section:
-#'
-#' Text accompanying the custom section.
-#'
-#' @param dm A distance matrix description of the parameter 'x'. The
-#'   description can span multiple lines.
-#' @param f factor description of the parameter 'y'.
+#' @param dm A distance matrix
+#' @param f factor
 #'
 #' @export
-#'
-#' @examples
-#' WdS(1, 2) ## returns 3
-#'
-#' ## don't run this in calls to 'example(add_numbers)'
-#' \dontrun{
-#'    WdS(2, 3)
-#' }
-#'
-#' ## don't test this during 'R CMD check'
-#' \donttest{
-#'    WdS(4, 5)
-#' }
 WdS = function(dm, f){
   # This method computes Wd* statistic for distance matrix dm and factor f
   ns = table(f)
@@ -123,65 +143,60 @@ generic.distance.permutation.test =
   rval = list(p.value = p.value,
               statistic = statistic,
               nrep=nrep,
-              method = paste0("METHOD WdS example nrep ",nrep),
-              data.name = "WdS NAME",
-              estimate = statistic)
-
-
-  # rval <- list(statistic = statistic,
-  #               #parameter = df,
-  #               #parameter = nrep,
-  #               nrep = nrep,
-  #               p.value = p.value
-  #               #estimate=estimate,
-  #               #method=method,
-  #               #data.name=dname
-  #              )
-  class(rval) <- "htest"
+              method = paste0("Generic distance permutation test, #reps ",nrep),
+              data.name = "Distance Permutation")
+  class(rval) = "htest"
   return(rval)
 }
 
-Tw2.test = function(dm, f, nrep=999, strata=NULL){
-  generic.distance.permutation.test(Tw2, dm = dm, f = f, nrep = nrep, strata=strata)
-}
-
-
-#' This is the title.
+#' Tw2.test - Tw2.test - run permuations of Tw2 statistic
 #'
-#' This is the description.
+#' The Tw2.test calculates the statistic for a given number of reps
+#' is based on a matrix and a factor
 #'
-#' These are further details.
-#'
-#' @section A Custom Section:
-#'
-#' Text accompanying the custom section.
+#' An optional strata can be specified.
 #'
 #' @param dm A distance matrix description of the parameter 'x'. The
 #'   description can span multiple lines.
-#' @param f factor description of the parameter 'y'.
-#' @param nrep factor description of the parameter 'y'.
-#' @param strata factor description of the parameter 'y'.
+#' @param f factor.
+#' @param nrep number of times to run the test.
+#' @param strata the variable to use to stratify
 #'
 #' @export
+Tw2.test = function(dm, f, nrep=999, strata=NULL){
+  rval = generic.distance.permutation.test(Tw2, dm = dm, f = f, nrep = nrep, strata=strata)
+  rval$method = "Tw2.test"
+  rval
+}
+
+
+#' WdS.test - run WdS one or more times
 #'
-#' @examples
-#' WdS.test(1, 2) ## returns 3
+#' Run WdS one or more times, with an optional stratification factor
 #'
-#' ## don't run this in calls to 'example(add_numbers)'
-#' \dontrun{
-#'    WdS.test(2, 3)
-#' }
+#' @param dm A distance matrix
+#' @param f factor
+#' @param nrep factor
+#' @param strata factor
 #'
-#' ## don't test this during 'R CMD check'
-#' \donttest{
-#'    WdS.test(4, 5)
-#' }
+#' @export
 WdS.test = function(dm, f, nrep=999, strata=NULL){
   result = generic.distance.permutation.test(WdS, dm = dm, f = f, nrep = nrep, strata=strata)
+  result$method = "WdS.test"
   result
 
 }
 
+#' Tw2.posthoc.tests - run Tw2 one or more times
+#'
+#' Run Tw2.test one or more times, with an optional stratification factor
+#'
+#' @param dm A distance matrix
+#' @param f factor
+#' @param nrep factor
+#' @param strata factor
+#'
+#' @export
 Tw2.posthoc.tests = function(dm, f, nrep=999, strata=NULL){
   dd = as.matrix(dm)
   Tw2.subset.test=function(include.levels){
@@ -192,9 +207,20 @@ Tw2.posthoc.tests = function(dm, f, nrep=999, strata=NULL){
   }
   res = t(combn(levels(f), 2, Tw2.subset.test))
   colnames(res) = c("Level1", "Level2", "N1", "N2", "p.value", "tw2.stat", "nrep")
+  class(res) = "htest"
   res
 }
 
+#' Tw2.posthoc.1vsAll.tests
+#'
+#' Run Tw2.test one or more times, with an optional stratification factor
+#'
+#' @param dm A distance matrix
+#' @param f factor
+#' @param nrep factor
+#' @param strata factor
+#'
+#' @export
 Tw2.posthoc.1vsAll.tests = function(dm, f, nrep=999, strata=NULL){
   Tw2.subset.test=function(level){
     fs = factor(f == level)
@@ -202,7 +228,6 @@ Tw2.posthoc.1vsAll.tests = function(dm, f, nrep=999, strata=NULL){
   }
   res = t(sapply(levels(f), Tw2.subset.test))
   colnames(res) = c("N1", "N2", "p.value", "tw2.stat", "nrep")
+  class(res) = "htest"
   res
 }
-
-
