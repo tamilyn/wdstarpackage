@@ -7,9 +7,9 @@
 dist.ss2(dm2, f)
 }
 \arguments{
-\item{f}{factor}
+\item{dm2}{A distance matrix of square distances}
 
-\item{dm}{A distance matrix of square distances}
+\item{f}{factor}
 }
 \description{
 The dist.ss2 statistic is based on a matrix and a factor

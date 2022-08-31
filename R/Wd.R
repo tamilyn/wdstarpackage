@@ -17,7 +17,7 @@ dist.sigma2 = function(dm){
 #'
 #' The dist.ss2 statistic is based on a matrix and a factor
 #'
-#' @param dm A distance matrix of square distances
+#' @param dm2 A distance matrix of square distances
 #' @param f factor
 #'
 #' @export
@@ -107,7 +107,7 @@ WdS = function(dm, f){
   s2 = diag(SS2)/ns/(ns-1)
   W = sum(ns/s2)
 
-  idxs = apply(combn(levels(f), 2),2, function(idx) levels(f) %in% idx)
+  idxs = apply(utils::combn(levels(f), 2),2, function(idx) levels(f) %in% idx)
 
   Ws = sum(apply(idxs, 2,
                  function(idx) sum(ns[idx])/prod(s2[idx]) *
@@ -139,14 +139,7 @@ generic.distance.permutation.test =
 
   p.value = sum(stats>=stats[1])/(nrep+1)
   statistic = stats[1]
-  #list(p.value = p.value, statistic = statistic, nrep=nrep)
-  rval = list(p.value = p.value,
-              statistic = statistic,
-              nrep=nrep,
-              method = paste0("Generic distance permutation test, #reps ",nrep),
-              data.name = "Distance Permutation")
-  class(rval) = "htest"
-  return(rval)
+  list(p.value = p.value, statistic = statistic, nrep=nrep)
 }
 
 #' Tw2.test - Tw2.test - run permuations of Tw2 statistic
@@ -176,6 +169,8 @@ generic.distance.permutation.test =
 Tw2.test = function(dm, f, nrep=999, strata=NULL){
   rval = generic.distance.permutation.test(Tw2, dm = dm, f = f, nrep = nrep, strata=strata)
   rval$method = "Tw2.test"
+  #rval$data.name = "Tw2.test distance permutation"
+  class(rval) = "htest"
   rval
 }
 
@@ -202,10 +197,11 @@ Tw2.test = function(dm, f, nrep=999, strata=NULL){
 #'
 #' @export
 WdS.test = function(dm, f, nrep=999, strata=NULL){
-  result = generic.distance.permutation.test(WdS, dm = dm, f = f, nrep = nrep, strata=strata)
-  result$method = "WdS.test"
-  result
-
+  rval = generic.distance.permutation.test(WdS, dm = dm, f = f, nrep = nrep, strata=strata)
+  rval$method = "WdS.test"
+  #rval$data.name = "WdS.test distance permutation"
+  class(rval) = "htest"
+  rval
 }
 
 #' Tw2.posthoc.tests - run Tw2 one or more times
@@ -219,6 +215,7 @@ WdS.test = function(dm, f, nrep=999, strata=NULL){
 #'
 #' @export
 Tw2.posthoc.tests = function(dm, f, nrep=999, strata=NULL){
+
   dd = as.matrix(dm)
   Tw2.subset.test=function(include.levels){
     subs = f %in% include.levels
@@ -226,9 +223,10 @@ Tw2.posthoc.tests = function(dm, f, nrep=999, strata=NULL){
       table(f[subs, drop=T]),
       Tw2.test(dd[subs, subs], f[subs,drop=T], nrep=nrep, strata=strata[subs]))
   }
-  res = t(combn(levels(f), 2, Tw2.subset.test))
-  colnames(res) = c("Level1", "Level2", "N1", "N2", "p.value", "tw2.stat", "nrep")
-  class(res) = "htest"
+  res = t(utils::combn(levels(f), 2, Tw2.subset.test))
+  colnames(res) = c("Level1", "Level2", "N1", "N2", "p.value", "tw2.stat",
+                    "nrep", "method")
+  #class(res) = "htest"
   res
 }
 
@@ -248,7 +246,8 @@ Tw2.posthoc.1vsAll.tests = function(dm, f, nrep=999, strata=NULL){
     c(table(fs), Tw2.test(dm, fs, nrep=nrep, strata=strata))
   }
   res = t(sapply(levels(f), Tw2.subset.test))
-  colnames(res) = c("N1", "N2", "p.value", "tw2.stat", "nrep")
-  # class(res) = "htest"
+  colnames(res) = c("N1", "N2", "p.value", "tw2.stat", "nrep",
+                    "method")
+  #class(res) = "htest"
   res
 }

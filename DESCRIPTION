@@ -1,14 +1,13 @@
 Package: wdstarpackage
-Title: WdStar (One Line, Title Case)
+Title: WdStar
 Version: 0.0.0.9001
 Authors@R: c(person('Bashir', 'Hamidi', 
  email="bashir@gmail.com",
  role = c('cre', 'aut')),
            person("Alexander", "Alekseyenko", role="aut"))
 Maintainer: The package maintainer <bashir@gmail.com>
-Description: Methods to compute the TdStar statistic.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: Methods to compute the WdStar statistic.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
