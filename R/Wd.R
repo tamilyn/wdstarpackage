@@ -162,6 +162,16 @@ generic.distance.permutation.test =
 #' @param nrep number of times to run the test.
 #' @param strata the variable to use to stratify
 #'
+#' @return returns a list with class **htest** containing
+#'
+#'method	- description of test
+#'
+#'statistic - observed value of the test statistic
+#'
+#'p.value - approximate p-value of the test
+#'
+#' nrep - number of repetitions
+#'
 #' @export
 Tw2.test = function(dm, f, nrep=999, strata=NULL){
   rval = generic.distance.permutation.test(Tw2, dm = dm, f = f, nrep = nrep, strata=strata)
@@ -178,6 +188,17 @@ Tw2.test = function(dm, f, nrep=999, strata=NULL){
 #' @param f factor
 #' @param nrep factor
 #' @param strata factor
+#'
+#' @return returns a list with class **htest** containing
+#'
+#'method	- description of test
+#'
+#'statistic - observed value of the test statistic
+#'
+#'p.value - approximate p-value of the test
+#'
+#' nrep - number of repetitions
+#'
 #'
 #' @export
 WdS.test = function(dm, f, nrep=999, strata=NULL){
@@ -228,6 +249,6 @@ Tw2.posthoc.1vsAll.tests = function(dm, f, nrep=999, strata=NULL){
   }
   res = t(sapply(levels(f), Tw2.subset.test))
   colnames(res) = c("N1", "N2", "p.value", "tw2.stat", "nrep")
-  class(res) = "htest"
+  # class(res) = "htest"
   res
 }
