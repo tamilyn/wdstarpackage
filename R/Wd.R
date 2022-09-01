@@ -1,24 +1,11 @@
 is.dist = function(x) any(class(x)=='dist')
 
-#' dist.sigma2 - sigma2 distance measure
+#' dist.ss2 - Within group sum of squares
 #'
-#' The dist.sigma2 statistic is based on a matrix and a factor
+#' The sum of squares are calculated on a square matrix of squared distances within each level of the grouping factor.
 #'
-#' @param dm A distance matrix
-#'
-#' @export
-dist.sigma2 = function(dm){
-  dd = as.matrix(dm)
-  dd[upper.tri(dd)]=0 ##
-  sum(dd^2)/nrow(dd)/(nrow(dd)-1)
-}
-
-#' dist.ss2 - ss2 distance measure
-#'
-#' The dist.ss2 statistic is based on a matrix and a factor
-#'
-#' @param dm2 A distance matrix of square distances
-#' @param f factor
+#' @param dm2 A distance matrix of squared distances
+#' @param f grouping factor
 #'
 #' @export
 dist.ss2 = function(dm2, f){ #dm2 is matrix of square distances; f factor
@@ -26,24 +13,14 @@ dist.ss2 = function(dm2, f){ #dm2 is matrix of square distances; f factor
   t(K)%*%dm2%*%K/2
 }
 
-#' dist.group.sigma2 - group sigma2 distance measure
+#' dist.cohen.d - Multivariate Cohen's D effect size estimation
 #'
-#' The dist.group.sigma2 statistic is based on a matrix and a factor
-#'
-#' @param dm A distance matrix
-#' @param f factor
-#'
-#' @export
-dist.group.sigma2 = function(dm, f){
-  diag(dist.ss2(as.matrix(dm)^2, f))/table(f)/(table(f)-1)
-}
-
-#' dist.cohen.d - cohen.d statistic
-#'
-#' The dist.cohen.d statistic is based on a matrix and a factor
-#'
-#' @param dm A distance matrix
-#' @param f factor
+#' The multivariate Cohen's D effect size estimation is based on a distance matrix and a factor with 2 levels. 
+#' The estimate is based on the identity d = 2 sqrt(T_w^2/df) where the degrees of freedom are estimated as:
+#' (s1^2/n1 + s2^2/n2)^2/{[(s1^2/n1)^2/(n1-1)] + [(s2^2/n2)^2/(n2-1)]}
+#' TODO: Check that the actual calculation here is correct
+#' @param dm A distance matrix or an object of class dist
+#' @param f factor with exactly 2 levels
 #'
 #' @export
 dist.cohen.d = function(dm, f){
